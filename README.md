@@ -59,6 +59,49 @@ Normal variables are basic strings. In some cases you want to use JSON objects o
 {{/each}}
 ```
 
+### Ignoring Files
+
+You can exclude specific template files from being synced using the `ignore-files` input. Paths are relative to the `templates/` directory.
+
+```yaml
+- uses: beam-community/actions-sync@v1
+  with:
+    sync-repository: beam-community/common-config
+    ignore-files: |
+      .github/workflows/release.yml
+      .tool-versions
+```
+
+## Configuration File
+
+You can configure actions-sync via a `.github/actions-sync.yml` file in your target repository. This allows each repository to customize sync behavior without modifying the workflow.
+
+```yaml
+# .github/actions-sync.yml
+commit-branch: chore/sync-config
+commit-message: "chore: update synced files"
+pr-enabled: false
+pr-title: "chore: sync configuration files"
+ignore-files:
+  - .github/workflows/ci.yaml
+  - .credo.exs
+```
+
+All fields are optional and serve as fallbacks when the corresponding action inputs are not specified. Available options:
+
+| Field | Description |
+|-------|-------------|
+| `commit-branch` | Branch name for sync commits |
+| `commit-message` | Commit message for changes |
+| `commit-user-email` | Git user email for commits |
+| `commit-user-name` | Git user name for commits |
+| `ignore-files` | List of template files to skip |
+| `pr-body` | Pull request body text |
+| `pr-enabled` | Whether to create a PR (`true`/`false`) |
+| `pr-labels` | Labels to apply to the PR |
+| `pr-review-users` | Users to request review from |
+| `pr-title` | Pull request title |
+
 ## Alternatives
 
 There are many other git sync type actions currently on GitHub, however most of them only handle static files. This action was created where some files are dynamic and should be templated or scripted before synced.
