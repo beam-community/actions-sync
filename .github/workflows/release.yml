@@ -17,7 +17,7 @@ jobs:
         uses: googleapis/release-please-action@v4
         with:
           release-type: node
-          package-name: "@stordco/actions-sync"
+          package-name: "@beam-community/actions-sync"
           token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
           extra-files: README.md
 
@@ -55,8 +55,8 @@ jobs:
       - if: steps.release.outputs.release_created
         name: Tag
         run: |
-          git config user.name stord-engineering-account
-          git config user.email engineering@stord.com
+          git config user.name thebeambot
+          git config user.email seancallan+beambot@gmail.com
 
           git add -f dist
           git commit --amend --no-edit

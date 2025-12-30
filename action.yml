@@ -8,10 +8,17 @@ branding:
 
 inputs:
   commit-branch:
-    description: The branch to commit changes to
+    description: The branch to commit changes to. Falls back to config file value if not specified.
     required: false
     type: string
     default: gha/actions-sync
+  config-file:
+    description: |
+      Path to the configuration file relative to the repository root.
+      Defaults to .github/actions-sync.yml
+    required: false
+    type: string
+    default: .github/actions-sync.yml
   commit-message:
     description: The commit message to use when committing changes
     required: false
@@ -75,6 +82,12 @@ inputs:
     required: false
     type: string
     default: main
+  ignore-files:
+    description: |
+      Newline-separated list of file paths to ignore during sync.
+      Paths are relative to the templates directory. Falls back to config file value if not specified.
+    required: false
+    type: string
 
 outputs:
   pull_request_url:
