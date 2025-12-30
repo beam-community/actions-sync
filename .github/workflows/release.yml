@@ -21,56 +21,48 @@ jobs:
           token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
           extra-files: README.md
 
-      - if: steps.release.outputs.release_created
+      - if: ${{ steps.release.outputs.release_created }}
         name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ steps.release.outputs.tag_name }}
           token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
           persist-credentials: true
 
-      - if: steps.release.outputs.release_created
+      - if: ${{ steps.release.outputs.release_created }}
         name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
-          node-version: 16
+          node-version: 20
           cache: npm
 
-      - if: steps.release.outputs.release_created
-        id: cache
-        name: Cache node_modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-16-nodemodules-${{ hashFiles('package-lock.json') }}
-
-      - if: steps.release.outputs.release_created && steps.cache.outputs.cache-hit != 'true'
+      - if: ${{ steps.release.outputs.release_created }}
         name: Install Dependencies
         run: npm ci
 
-      - if: steps.release.outputs.release_created
+      - if: ${{ steps.release.outputs.release_created }}
         name: Build
         run: npm run build
 
-      - if: steps.release.outputs.release_created
+      - if: ${{ steps.release.outputs.release_created }}
         name: Tag
         run: |
-          git config user.name thebeambot
-          git config user.email seancallan+beambot@gmail.com
+          git config user.name doomspork
+          git config user.email iamdoomspork@gmail.com
 
           git add -f dist
           git commit --amend --no-edit
 
+          git tag -d latest || true
           git tag -d v${{ steps.release.outputs.major }} || true
           git tag -d v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} || true
-          git tag -d latest || true
+          git push origin :latest || true
           git push origin :v${{ steps.release.outputs.major }} || true
           git push origin :v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} || true
-          git push origin :latest || true
 
+          git tag -a latest -m "chore(main): release latest"
           git tag -a v${{ steps.release.outputs.major }} -m "chore(main): release ${{ steps.release.outputs.major }}"
           git tag -a v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} -m "chore(main): release  v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}"
-          git tag -a latest -m "chore(main): release  ${{ steps.release.outputs.tag_name }}"
+          git push origin latest
           git push origin v${{ steps.release.outputs.major }}
           git push origin v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}
-          git push origin latest
