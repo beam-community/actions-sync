@@ -1,16 +1,16 @@
 {
-  "name": "@stordco/actions-sync",
+  "name": "@beam-community/actions-sync",
   "version": "1.13.0",
   "description": "Sync GitHub repositories via templates and scripts",
   "license": "MIT",
   "main": "src/index.ts",
-  "homepage": "https://github.com/stordco/actions-sync#readme",
+  "homepage": "https://github.com/beam-community/actions-sync#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/stordco/actions-sync.git"
+    "url": "git+https://github.com/beam-community/actions-sync.git"
   },
   "bugs": {
-    "url": "https://github.com/stordco/actions-sync/issues"
+    "url": "https://github.com/beam-community/actions-sync/issues"
   },
   "scripts": {
     "build": "ncc build src/entrypoint.ts --asset-builds --out dist --source-map --license licenses.txt",
@@ -27,10 +27,13 @@
     "@octokit/plugin-retry": "^3.0.9",
     "@octokit/plugin-throttling": "^3.7.0",
     "handlebars": "^4.7.7",
+    "js-yaml": "^4.1.1",
     "lodash": "^4.17.21",
+    "minimatch": "^10.1.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
     "@types/lodash": "^4.14.199",
     "@types/node": "^20.4.1",
     "@types/uuid": "^9.0.2",

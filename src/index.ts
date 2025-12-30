@@ -7,11 +7,13 @@ import {
   createPr,
 } from "./git";
 import { getConfig } from "./config";
+import { loadConfigFile } from "./configFile";
 import { templateFiles } from "./templates";
 import { runScripts } from "./scripts";
 
 export async function run() {
-  const config = getConfig();
+  let config = getConfig();
+  config = await loadConfigFile(config);
 
   await configureRepository(config);
   await cloneRepository(config);

@@ -20,7 +20,9 @@ describe.concurrent("templates", () => {
       commitMessage: "commit message",
       commitUserEmail: "test@example.com",
       commitUserName: "testing",
+      configFilePath: "",
       fullPath,
+      ignoreFiles: [],
       path: "",
       prAssignee: "",
       prBody: "testing",
@@ -29,9 +31,9 @@ describe.concurrent("templates", () => {
       prReviewUsers: [],
       prTitle: "testing",
       syncAuth: "",
-      syncBranch: "main",
       syncPath: resolve(__dirname, "../test/fixtures"),
       syncRepository: "test/test",
+      syncTree: "main",
       templateVariables: {},
     };
   });
@@ -92,5 +94,49 @@ This file will only be templated if the \`NO_MARKDOWN\` environment variable is 
     const stats = await stat(path);
 
     expect(stats.mode.toString(8)).toBe("100755");
+  });
+
+  it<LocalTestContext>("will ignore files matching exact ignore patterns", async (ctx) => {
+    await templateFiles({
+      ...ctx.config,
+      ignoreFiles: ["basic.json"],
+    });
+    const path = join(ctx.config.fullPath, "basic.json");
+    const fileExists = existsSync(path);
+    expect(fileExists).toBe(false);
+
+    // Other files should still be templated
+    const mdPath = join(ctx.config.fullPath, "conditional.md");
+    expect(existsSync(mdPath)).toBe(true);
+  });
+
+  it<LocalTestContext>("will ignore files matching glob patterns", async (ctx) => {
+    await templateFiles({
+      ...ctx.config,
+      ignoreFiles: ["*.json"],
+    });
+    const path = join(ctx.config.fullPath, "basic.json");
+    const fileExists = existsSync(path);
+    expect(fileExists).toBe(false);
+
+    // Non-matching files should still be templated
+    const mdPath = join(ctx.config.fullPath, "conditional.md");
+    expect(existsSync(mdPath)).toBe(true);
+  });
+
+  it<LocalTestContext>("will ignore multiple files with multiple patterns", async (ctx) => {
+    await templateFiles({
+      ...ctx.config,
+      ignoreFiles: ["*.json", "*.md"],
+    });
+    const jsonPath = join(ctx.config.fullPath, "basic.json");
+    const mdPath = join(ctx.config.fullPath, "conditional.md");
+
+    expect(existsSync(jsonPath)).toBe(false);
+    expect(existsSync(mdPath)).toBe(false);
+
+    // Shell files should still be templated
+    const shPath = join(ctx.config.fullPath, "executable.sh");
+    expect(existsSync(shPath)).toBe(true);
   });
 });
