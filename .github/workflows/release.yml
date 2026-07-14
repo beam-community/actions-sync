@@ -1,0 +1,60 @@
+---
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  please:
+    name: Please
+    runs-on: ubuntu-latest
+
+    steps:
+      - id: release
+        name: Release
+        uses: googleapis/release-please-action@v4
+        with:
+          release-type: node
+          package-name: "@beam-community/actions-sync"
+          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          extra-files: README.md
+
+      - if: ${{ steps.release.outputs.release_created }}
+        name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.release.outputs.tag_name }}
+          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          persist-credentials: true
+
+      - if: ${{ steps.release.outputs.release_created }}
+        name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+
+      - if: ${{ steps.release.outputs.release_created }}
+        name: Install Dependencies
+        run: npm ci
+
+      - if: ${{ steps.release.outputs.release_created }}
+        name: Build
+        run: npm run build
+
+      - if: ${{ steps.release.outputs.release_created }}
+        name: Tag
+        run: |
+          git config user.name doomspork
+          git config user.email iamdoomspork@gmail.com
+
+          git add -f dist
+          git commit --amend --no-edit
+
+          git tag -fa latest -m "chore(main): release latest"
+          git tag -fa v${{ steps.release.outputs.major }} -m "chore(main): release ${{ steps.release.outputs.major }}"
+          git tag -fa v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} -m "chore(main): release  v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}"
+          git tag -fa ${{ steps.release.outputs.tag_name }} -m "chore(main): release ${{ steps.release.outputs.tag_name }}"
+          git push --force origin latest v${{ steps.release.outputs.major }} v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} ${{ steps.release.outputs.tag_name }}
