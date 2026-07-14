@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.1](https://github.com/beam-community/actions-sync/compare/v1.14.0...v1.14.1) (2026-07-14)
+
+
+### Bug Fixes
+
+* keep release tags in sync with the commit that has dist built ([#3](https://github.com/beam-community/actions-sync/issues/3)) ([7b2a14a](https://github.com/beam-community/actions-sync/commit/7b2a14a7e09dccefeb6e0cf36bdeffa84f19de0a))
+
 ## [1.14.0](https://github.com/beam-community/actions-sync/compare/v1.13.0...v1.14.0) (2025-12-30)
 
 
